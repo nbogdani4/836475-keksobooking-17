@@ -10,8 +10,9 @@ var getZero = function (number) {
 
 var offersTypes = ['palace', 'flat', 'house', 'bungalo'];
 var map = document.querySelector('.map');
+map.classList.remove('map--faded');
 
-var advertisement = function (userInt) {
+var getAdvertisement = function (userInt) {
   return {
     author: {
       avatar: 'img/avatars/user' + getZero(userInt) + '.png',
@@ -26,17 +27,22 @@ var advertisement = function (userInt) {
   };
 };
 
-map.classList.remove('map--faded');
+var getPinFragment = function (pinCount) {
+  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var pinFragment = document.createDocumentFragment();
 
-var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-var pinFragment = document.createDocumentFragment();
+  for (var i = 1; i <= pinCount; i++) {
+    var newPin = pinTemplate.cloneNode(true);
+    var pinImg = newPin.querySelector('img');
+    var pinLocationX = getAdvertisement(i).location.x - pinImg.getAttribute('width') / 2;
+    var PinLocationY = getAdvertisement(i).location.y - pinImg.getAttribute('height');
 
-for (var i = 1; i <= 8; i++) {
-  var newPin = pinTemplate.cloneNode(true);
-  var pinImg = newPin.querySelector('img');
-  pinImg.setAttribute('src', advertisement(i).author.avatar);
-  pinImg.setAttribute('alt', advertisement(i).offer.type);
-  newPin.setAttribute('style', 'left: ' + advertisement(i).location.x + 'px; top: ' + advertisement(i).location.y + 'px;');
-  pinFragment.appendChild(newPin);
-}
-map.querySelector('.map__pins').appendChild(pinFragment);
+    pinImg.setAttribute('src', getAdvertisement(i).author.avatar);
+    pinImg.setAttribute('alt', getAdvertisement(i).offer.type);
+    newPin.setAttribute('style', 'left: ' + pinLocationX + 'px; top: ' + PinLocationY + 'px;');
+    pinFragment.appendChild(newPin);
+  }
+  return pinFragment;
+};
+
+map.querySelector('.map__pins').appendChild(getPinFragment(8));
