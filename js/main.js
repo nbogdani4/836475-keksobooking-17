@@ -24,14 +24,24 @@ var addLeadingZero = function (number) {
   return (number < 10 ? '0' : '') + number;
 };
 
-//  Корректирует положение Пина по оси Х, исходя от его размера
+//  Корректирует положение Пина по оси Х исходя от его размера и не дает метке выпасть за пределы карты
 var correctPinLocationX = function (locationX, pinWidth) {
-  return locationX - (pinWidth / 2);
+  var correctLocation = locationX - (pinWidth / 2);
+  if (locationX < (pinWidth / 2)) {
+    correctLocation = 0;
+  } else if (locationX > LOCATION_MAX_X - (pinWidth / 2)) {
+    correctLocation = LOCATION_MAX_X - pinWidth;
+  }
+  return correctLocation;
 };
 
-//  Корректирует положение Пина по оси У, исходя от его высоты
+//  Корректирует положение Пина по оси У, исходя от его высоты и не дает метке выпасть за пределы карты
 var correctPinLocationY = function (locationY, pinHeight) {
-  return locationY - pinHeight;
+  var correctLocation = locationY - pinHeight;
+  if (correctLocation < LOCATION_MIN_Y) {
+    correctLocation = LOCATION_MIN_Y;
+  }
+  return correctLocation;
 };
 
 //  Создает массив из 8 сгенерированных объектов со свойствами объявлений
