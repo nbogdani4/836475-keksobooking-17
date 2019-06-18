@@ -1,48 +1,77 @@
 'use strict';
 
-var getRandomInt = function (min, max) {
+document.querySelector('.map').classList.remove('map--faded');
+var OFFER_TYPE = ['palace', 'flat', 'house', 'bungalo'];
+var LOCATION_MIN_X = 0;
+var LOCATION_MAX_X = document.querySelector('.map').clientWidth;
+var LOCATION_MIN_Y = 130;
+var LOCATION_MAX_Y = 630;
+var ADVERTISEMENTS_COUNT = 8;
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
+
+var genRandomRange = function (min, max) {
   return Math.floor(Math.random() * (max + 1 - min) + min);
 };
 
-var getZero = function (number) {
+var getRandomValue = function (arr) {
+  var rand = Math.floor(Math.random() * arr.length);
+  return arr[rand];
+};
+
+//  Добавляет ведущий ноль, если число меньше двух знаков
+var addLeadingZero = function (number) {
   return (number < 10 ? '0' : '') + number;
 };
 
-var offersTypes = ['palace', 'flat', 'house', 'bungalo'];
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
-
-var getAdvertisement = function (userInt) {
-  return {
-    author: {
-      avatar: 'img/avatars/user' + getZero(userInt) + '.png',
-    },
-    offer: {
-      type: offersTypes[getRandomInt(0, offersTypes.length - 1)],
-    },
-    location: {
-      x: getRandomInt(0, map.clientWidth),
-      y: getRandomInt(130, 630),
-    }
-  };
+//  Корректирует положение Пина по оси Х, исходя от его размера
+var correctPinLocationX = function (locationX, pinWidth) {
+  return locationX - (pinWidth / 2);
 };
 
-var getPinFragment = function (pinCount) {
-  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-  var pinFragment = document.createDocumentFragment();
+//  Корректирует положение Пина по оси У, исходя от его высоты
+var correctPinLocationY = function (locationY, pinHeight) {
+  return locationY - pinHeight;
+};
 
-  for (var i = 1; i <= pinCount; i++) {
-    var newPin = pinTemplate.cloneNode(true);
-    var pinImg = newPin.querySelector('img');
-    var pinLocationX = getAdvertisement(i).location.x - pinImg.getAttribute('width') / 2;
-    var PinLocationY = getAdvertisement(i).location.y - pinImg.getAttribute('height');
+//  Создает массив из 8 сгенерированных объектов со свойствами объявлений
+var advertisementsDataArray = [];
+for (var i = 1; i <= ADVERTISEMENTS_COUNT; i++) {
+  advertisementsDataArray.push(
+      {
+        author: {
+          avatar: 'img/avatars/user' + addLeadingZero(i) + '.png',
+        },
+        offer: {
+          type: getRandomValue(OFFER_TYPE),
+        },
+        location: {
+          x: genRandomRange(LOCATION_MIN_X, LOCATION_MAX_X),
+          y: genRandomRange(LOCATION_MIN_Y, LOCATION_MAX_Y),
+        }
+      }
+  );
+}
 
-    pinImg.setAttribute('src', getAdvertisement(i).author.avatar);
-    pinImg.setAttribute('alt', getAdvertisement(i).offer.type);
-    newPin.setAttribute('style', 'left: ' + pinLocationX + 'px; top: ' + PinLocationY + 'px;');
-    pinFragment.appendChild(newPin);
+//  Создаем Дом-элемент Пина, с подготовленными местами для вставки данных с массива объекта
+var createPinElement = function (advertisementsData) {
+  var newPin = document.querySelector('#pin').content.querySelector('.map__pin').cloneNode(true);
+  var newPinImg = newPin.querySelector('img');
+  newPinImg.src = advertisementsData.author.avatar;
+  newPinImg.alt = advertisementsData.offer.type;
+  newPin.style.left = correctPinLocationX(advertisementsData.location.x, PIN_WIDTH) + 'px';
+  newPin.style.top = correctPinLocationY(advertisementsData.location.y, PIN_HEIGHT) + 'px';
+  return newPin;
+};
+
+//  Возвращаем сгенерированный Фрагмент с готовыми Пинами, собранными из шаблона и массива объектов
+var getFragmentWithPins = function (valueLength) {
+  var fragmentWithPins = document.createDocumentFragment();
+  for (i = 0; i < valueLength; i++) {
+    fragmentWithPins.appendChild(createPinElement(advertisementsDataArray[i]));
   }
-  return pinFragment;
+  return fragmentWithPins;
 };
 
-map.querySelector('.map__pins').appendChild(getPinFragment(8));
+//  Выводим на экран Пины Фрагмента
+document.querySelector('.map__pins').appendChild(getFragmentWithPins(advertisementsDataArray.length));
