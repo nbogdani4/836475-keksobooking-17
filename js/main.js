@@ -15,7 +15,7 @@ var genRandomRange = function (min, max) {
 };
 
 var getRandomValue = function (arr) {
-  var rand = Math.floor(Math.random() * arr.length);
+  var rand = genRandomRange(0, arr.length);
   return arr[rand];
 };
 
