@@ -45,23 +45,26 @@ var correctPinLocationY = function (locationY, pinHeight) {
 };
 
 //  Создает массив из 8 сгенерированных объектов со свойствами объявлений
-var advertisementsDataArray = [];
-for (var i = 1; i <= ADVERTISEMENTS_COUNT; i++) {
-  advertisementsDataArray.push(
-      {
-        author: {
-          avatar: 'img/avatars/user' + addLeadingZero(i) + '.png',
-        },
-        offer: {
-          type: getRandomValue(OFFER_TYPE),
-        },
-        location: {
-          x: genRandomRange(LOCATION_MIN_X, LOCATION_MAX_X),
-          y: genRandomRange(LOCATION_MIN_Y, LOCATION_MAX_Y),
+var genDataObjectsArray = function (countDataObjects) {
+  var advertisementsDataArr = [];
+  for (var i = 1; i <= countDataObjects; i++) {
+    advertisementsDataArr.push(
+        {
+          author: {
+            avatar: 'img/avatars/user' + addLeadingZero(i) + '.png',
+          },
+          offer: {
+            type: getRandomValue(OFFER_TYPE),
+          },
+          location: {
+            x: genRandomRange(LOCATION_MIN_X, LOCATION_MAX_X),
+            y: genRandomRange(LOCATION_MIN_Y, LOCATION_MAX_Y),
+          }
         }
-      }
-  );
-}
+    );
+  }
+  return advertisementsDataArr;
+};
 
 //  Создаем Дом-элемент Пина, с подготовленными местами для вставки данных с массива объекта
 var createPinElement = function (advertisementsData) {
@@ -77,11 +80,12 @@ var createPinElement = function (advertisementsData) {
 //  Возвращаем сгенерированный Фрагмент с готовыми Пинами, собранными из шаблона и массива объектов
 var getFragmentWithPins = function (valueLength) {
   var fragmentWithPins = document.createDocumentFragment();
-  for (i = 0; i < valueLength; i++) {
+  for (var i = 0; i < valueLength; i++) {
     fragmentWithPins.appendChild(createPinElement(advertisementsDataArray[i]));
   }
   return fragmentWithPins;
 };
 
 //  Выводим на экран Пины Фрагмента
+var advertisementsDataArray = genDataObjectsArray(ADVERTISEMENTS_COUNT);
 document.querySelector('.map__pins').appendChild(getFragmentWithPins(advertisementsDataArray.length));
