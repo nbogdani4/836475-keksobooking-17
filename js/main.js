@@ -1,6 +1,5 @@
 'use strict';
 
-document.querySelector('.map').classList.remove('map--faded');
 var OFFER_TYPE = ['palace', 'flat', 'house', 'bungalo'];
 var LOCATION_MIN_X = 0;
 var LOCATION_MAX_X = document.querySelector('.map').clientWidth;
@@ -9,6 +8,39 @@ var LOCATION_MAX_Y = 630;
 var ADVERTISEMENTS_COUNT = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
+
+var cityMap = document.querySelector('.map');
+var adForm = document.querySelector('.ad-form');
+var mapfilterForm = cityMap.querySelector('.map__filters');
+var mapPinMain = cityMap.querySelector('.map__pin--main');
+
+// Функция добавляет атрибут disabled к тегам fieldset и select из переданного массива
+var addAttributeDisabled = function (array) {
+  for (var i = 0; i < array.length; i++) {
+    if ((array[i].tagName.toLowerCase() === 'fieldset') || (array[i].tagName.toLowerCase() === 'select')) {
+      array[i].disabled = true;
+    }
+  }
+};
+
+// Функция удаляет атрибут disabled у любых тегов (если он есть) из переданного массива
+var delAttributeDisabled = function (array) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i].disabled) {
+      array[i].disabled = false;
+    }
+  }
+};
+
+var pinMainLocationX = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2);
+var pinMainLocationY = Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2);
+var inputAdress = adForm.querySelector('#address');
+
+inputAdress.value = pinMainLocationX + '.' + pinMainLocationY;
+
+// Блокируем поля форм
+addAttributeDisabled(adForm.children);
+addAttributeDisabled(mapfilterForm.children);
 
 var genRandomRange = function (min, max) {
   return Math.floor(Math.random() * (max + 1 - min) + min);
@@ -86,6 +118,13 @@ var getFragmentWithPins = function (valueLength) {
   return fragmentWithPins;
 };
 
-//  Выводим на экран Пины Фрагмента
 var advertisementsDataArray = genDataObjectsArray(ADVERTISEMENTS_COUNT);
-document.querySelector('.map__pins').appendChild(getFragmentWithPins(advertisementsDataArray.length));
+
+// При клике на главную метку, обработчик событий делает карту, фильтр, форму и поля формы активной
+mapPinMain.addEventListener('mouseup', function () {
+  cityMap.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  delAttributeDisabled(adForm.children);
+  delAttributeDisabled(mapfilterForm.children);
+  document.querySelector('.map__pins').appendChild(getFragmentWithPins(advertisementsDataArray.length));
+});
