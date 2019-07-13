@@ -29,7 +29,6 @@ var changeMinPrice = function () {
   } else if (currenItemSelected === 'flat') {
     inputPrice.placeholder = MIN_PRICE_FLAT;
     inputPrice.min = MIN_PRICE_FLAT;
-    return;
   } else if (currenItemSelected === 'house') {
     inputPrice.placeholder = MIN_PRICE_HOUSE;
     inputPrice.min = MIN_PRICE_HOUSE;
@@ -49,9 +48,9 @@ var selectTimeOut = adForm.querySelector('#timeout');
 var synchronizationTimeFild = function () {
   if (event.target.id === selectTimeIn.id) {
     selectTimeOut.value = selectTimeIn.value;
-  } else {
-    selectTimeIn.value = selectTimeOut.value;
+    return;
   }
+    selectTimeIn.value = selectTimeOut.value;
 };
 
 selectTimeIn.addEventListener('change', synchronizationTimeFild);
