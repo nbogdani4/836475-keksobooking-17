@@ -50,7 +50,7 @@ var synchronizationTimeFild = function () {
     selectTimeOut.value = selectTimeIn.value;
     return;
   }
-    selectTimeIn.value = selectTimeOut.value;
+  selectTimeIn.value = selectTimeOut.value;
 };
 
 selectTimeIn.addEventListener('change', synchronizationTimeFild);
