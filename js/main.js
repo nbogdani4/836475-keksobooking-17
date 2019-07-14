@@ -8,11 +8,53 @@ var LOCATION_MAX_Y = 630;
 var ADVERTISEMENTS_COUNT = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
+var MIN_PRICE_BUNGALO = 0;
+var MIN_PRICE_FLAT = 1000;
+var MIN_PRICE_HOUSE = 5000;
+var MIN_PRICE_PALACE = 10000;
 
 var cityMap = document.querySelector('.map');
 var adForm = document.querySelector('.ad-form');
 var mapfilterForm = cityMap.querySelector('.map__filters');
 var mapPinMain = cityMap.querySelector('.map__pin--main');
+var inputPrice = adForm.querySelector('#price');
+var selectTypeHousing = adForm.querySelector('#type');
+
+// Фукнция меняет минимальную цену, в зависимости от выбранного жилья
+var changeMinPrice = function () {
+  var currenItemSelected = selectTypeHousing.value;
+  if (currenItemSelected === 'bungalo') {
+    inputPrice.placeholder = MIN_PRICE_BUNGALO;
+    inputPrice.min = MIN_PRICE_BUNGALO;
+  } else if (currenItemSelected === 'flat') {
+    inputPrice.placeholder = MIN_PRICE_FLAT;
+    inputPrice.min = MIN_PRICE_FLAT;
+  } else if (currenItemSelected === 'house') {
+    inputPrice.placeholder = MIN_PRICE_HOUSE;
+    inputPrice.min = MIN_PRICE_HOUSE;
+  } else if (currenItemSelected === 'palace') {
+    inputPrice.placeholder = MIN_PRICE_PALACE;
+    inputPrice.min = MIN_PRICE_PALACE;
+  }
+};
+
+changeMinPrice();
+selectTypeHousing.addEventListener('change', changeMinPrice);
+
+var selectTimeIn = adForm.querySelector('#timein');
+var selectTimeOut = adForm.querySelector('#timeout');
+
+// Функция синхронизирует время заезда /выезда
+var synchronizationTimeFild = function () {
+  if (event.target.id === selectTimeIn.id) {
+    selectTimeOut.value = selectTimeIn.value;
+    return;
+  }
+  selectTimeIn.value = selectTimeOut.value;
+};
+
+selectTimeIn.addEventListener('change', synchronizationTimeFild);
+selectTimeOut.addEventListener('change', synchronizationTimeFild);
 
 // Функция добавляет атрибут disabled к тегам fieldset и select из переданного массива
 var addAttributeDisabled = function (array) {
