@@ -162,18 +162,11 @@ var getFragmentWithPins = function (valueLength) {
 
 var advertisementsDataArray = genDataObjectsArray(ADVERTISEMENTS_COUNT);
 
-// // При клике на главную метку, обработчик событий делает карту, фильтр, форму и поля формы активной
-// mapPinMain.addEventListener('mouseup', function () {
-//   cityMap.classList.remove('map--faded');
-//   adForm.classList.remove('ad-form--disabled');
-//   delAttributeDisabled(adForm.children);
-//   delAttributeDisabled(mapfilterForm.children);
-//   document.querySelector('.map__pins').appendChild(getFragmentWithPins(advertisementsDataArray.length));
-// });
-
+var firstMove = true;
 mapPinMain.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
 
+  var isMove = false;
   var startCoords = {
     x: evt.clientX,
     y: evt.clientY
@@ -182,6 +175,7 @@ mapPinMain.addEventListener('mousedown', function (evt) {
   var onMouseMove = function (moveEvt) {
     moveEvt.preventDefault();
 
+    isMove = true;
     var shift = {
       x: startCoords.x - moveEvt.clientX,
       y: startCoords.y - moveEvt.clientY
@@ -191,14 +185,51 @@ mapPinMain.addEventListener('mousedown', function (evt) {
       x: moveEvt.clientX,
       y: moveEvt.clientY
     };
+    var newCoordsMainPinX = mapPinMain.offsetLeft - shift.x;
+    var newCoordsMainPinY = mapPinMain.offsetTop - shift.y;
 
-    mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
-    mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
+    if (newCoordsMainPinY > LOCATION_MAX_Y) {
+      newCoordsMainPinY = LOCATION_MAX_Y;
+    }
 
+    if (newCoordsMainPinY < LOCATION_MIN_Y) {
+      newCoordsMainPinY = LOCATION_MIN_Y;
+    }
+
+    if (newCoordsMainPinX < 0) {
+      newCoordsMainPinX = 0;
+    }
+
+    if (newCoordsMainPinX > LOCATION_MAX_X - mapPinMain.offsetWidth) {
+      newCoordsMainPinX = LOCATION_MAX_X - mapPinMain.offsetWidth;
+    }
+
+    mapPinMain.style.left = newCoordsMainPinX + 'px';
+    mapPinMain.style.top = newCoordsMainPinY + 'px';
+
+    if (firstMove === true) {
+      inputAdress.value = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2);
+    } else {
+      inputAdress.value = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight);
+    }
   };
 
   var onMouseUp = function (upEvt) {
     upEvt.preventDefault();
+
+    if (isMove === true) {
+      if (firstMove === true) {
+        firstMove = false;
+        inputAdress.value = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2);
+        cityMap.classList.remove('map--faded');
+        adForm.classList.remove('ad-form--disabled');
+        delAttributeDisabled(adForm.children);
+        delAttributeDisabled(mapfilterForm.children);
+        document.querySelector('.map__pins').appendChild(getFragmentWithPins(advertisementsDataArray.length));
+      } else {
+        inputAdress.value = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight);
+      }
+    }
 
     cityMap.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
