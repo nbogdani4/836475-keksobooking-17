@@ -162,7 +162,45 @@ var getFragmentWithPins = function (valueLength) {
 
 var advertisementsDataArray = genDataObjectsArray(ADVERTISEMENTS_COUNT);
 
-var firstMove = true;
+// Ограничивает перемещение Пина по оси Х
+var setLimitMovementMainPinX = function (mapPinMainCoordsX) {
+  if (mapPinMainCoordsX < 0) {
+    mapPinMainCoordsX = 0;
+  }
+
+  if (mapPinMainCoordsX > LOCATION_MAX_X - mapPinMain.offsetWidth) {
+    mapPinMainCoordsX = LOCATION_MAX_X - mapPinMain.offsetWidth;
+  }
+  return mapPinMainCoordsX;
+};
+
+// Ограничивает перемещение Пина по оси Y
+var setLimitMovementMainPinY = function (mapPinMainCoordsY) {
+  if (mapPinMainCoordsY > LOCATION_MAX_Y) {
+    mapPinMainCoordsY = LOCATION_MAX_Y;
+  }
+
+  if (mapPinMainCoordsY < LOCATION_MIN_Y) {
+    mapPinMainCoordsY = LOCATION_MIN_Y;
+  }
+  return mapPinMainCoordsY;
+};
+
+// Возвращает координаты метки, в зависимости от атрибута функции (середина Пина или координаты, на которые метка указывает своим острым концом)
+var mainPinReferencePoint = function (referencePoint) {
+  var pinReferencePoint;
+
+  if (referencePoint === 'center') {
+    pinReferencePoint = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2);
+  }
+
+  if (referencePoint === 'bottom') {
+    pinReferencePoint = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight);
+  }
+  return pinReferencePoint;
+};
+
+var isDisabledMap = true;
 mapPinMain.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
 
@@ -185,32 +223,14 @@ mapPinMain.addEventListener('mousedown', function (evt) {
       x: moveEvt.clientX,
       y: moveEvt.clientY
     };
-    var newCoordsMainPinX = mapPinMain.offsetLeft - shift.x;
-    var newCoordsMainPinY = mapPinMain.offsetTop - shift.y;
 
-    if (newCoordsMainPinY > LOCATION_MAX_Y) {
-      newCoordsMainPinY = LOCATION_MAX_Y;
-    }
+    mapPinMain.style.left = setLimitMovementMainPinX(mapPinMain.offsetLeft - shift.x) + 'px';
+    mapPinMain.style.top = setLimitMovementMainPinY(mapPinMain.offsetTop - shift.y) + 'px';
 
-    if (newCoordsMainPinY < LOCATION_MIN_Y) {
-      newCoordsMainPinY = LOCATION_MIN_Y;
-    }
-
-    if (newCoordsMainPinX < 0) {
-      newCoordsMainPinX = 0;
-    }
-
-    if (newCoordsMainPinX > LOCATION_MAX_X - mapPinMain.offsetWidth) {
-      newCoordsMainPinX = LOCATION_MAX_X - mapPinMain.offsetWidth;
-    }
-
-    mapPinMain.style.left = newCoordsMainPinX + 'px';
-    mapPinMain.style.top = newCoordsMainPinY + 'px';
-
-    if (firstMove === true) {
-      inputAdress.value = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2);
+    if (isDisabledMap === true) {
+      inputAdress.value = mainPinReferencePoint('center');
     } else {
-      inputAdress.value = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight);
+      inputAdress.value = mainPinReferencePoint('bottom');
     }
   };
 
@@ -218,16 +238,16 @@ mapPinMain.addEventListener('mousedown', function (evt) {
     upEvt.preventDefault();
 
     if (isMove === true) {
-      if (firstMove === true) {
-        firstMove = false;
-        inputAdress.value = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2);
+      if (isDisabledMap === true) {
+        isDisabledMap = false;
+        inputAdress.value = mainPinReferencePoint('center');
         cityMap.classList.remove('map--faded');
         adForm.classList.remove('ad-form--disabled');
         delAttributeDisabled(adForm.children);
         delAttributeDisabled(mapfilterForm.children);
         document.querySelector('.map__pins').appendChild(getFragmentWithPins(advertisementsDataArray.length));
       } else {
-        inputAdress.value = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight);
+        inputAdress.value = mainPinReferencePoint('bottom');
       }
     }
 
