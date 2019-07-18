@@ -2,7 +2,7 @@
 
 var OFFER_TYPE = ['palace', 'flat', 'house', 'bungalo'];
 var LOCATION_MIN_X = 0;
-var LOCATION_MAX_X = document.querySelector('.map').clientWidth;
+var LOCATION_MAX_X = 1200;
 var LOCATION_MIN_Y = 130;
 var LOCATION_MAX_Y = 630;
 var ADVERTISEMENTS_COUNT = 8;
@@ -163,37 +163,33 @@ var getFragmentWithPins = function (valueLength) {
 var advertisementsDataArray = genDataObjectsArray(ADVERTISEMENTS_COUNT);
 
 // Ограничивает перемещение Пина по оси Х
-var setLimitMovementMainPinX = function (mapPinMainCoordsX) {
-  if (mapPinMainCoordsX < 0) {
-    mapPinMainCoordsX = 0;
+var setLimitMovementMainPinX = function (mapPinMainCoordinateX) {
+  if (mapPinMainCoordinateX < 0) {
+    mapPinMainCoordinateX = 0;
   }
-
-  if (mapPinMainCoordsX > LOCATION_MAX_X - mapPinMain.offsetWidth) {
-    mapPinMainCoordsX = LOCATION_MAX_X - mapPinMain.offsetWidth;
+  if (mapPinMainCoordinateX > LOCATION_MAX_X - mapPinMain.offsetWidth) {
+    mapPinMainCoordinateX = LOCATION_MAX_X - mapPinMain.offsetWidth;
   }
-  return mapPinMainCoordsX;
+  return mapPinMainCoordinateX;
 };
 
 // Ограничивает перемещение Пина по оси Y
-var setLimitMovementMainPinY = function (mapPinMainCoordsY) {
-  if (mapPinMainCoordsY > LOCATION_MAX_Y) {
-    mapPinMainCoordsY = LOCATION_MAX_Y;
+var setLimitMovementMainPinY = function (mapPinMainCoordinateY) {
+  if (mapPinMainCoordinateY > LOCATION_MAX_Y) {
+    mapPinMainCoordinateY = LOCATION_MAX_Y;
   }
-
-  if (mapPinMainCoordsY < LOCATION_MIN_Y) {
-    mapPinMainCoordsY = LOCATION_MIN_Y;
+  if (mapPinMainCoordinateY < LOCATION_MIN_Y) {
+    mapPinMainCoordinateY = LOCATION_MIN_Y;
   }
-  return mapPinMainCoordsY;
+  return mapPinMainCoordinateY;
 };
 
 // Возвращает координаты метки, в зависимости от атрибута функции (середина Пина или координаты, на которые метка указывает своим острым концом)
 var mainPinReferencePoint = function (referencePoint) {
   var pinReferencePoint;
-
   if (referencePoint === 'center') {
     pinReferencePoint = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2);
   }
-
   if (referencePoint === 'bottom') {
     pinReferencePoint = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight);
   }
@@ -205,7 +201,7 @@ mapPinMain.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
 
   var isMove = false;
-  var startCoords = {
+  var startCoordinates = {
     x: evt.clientX,
     y: evt.clientY
   };
@@ -215,11 +211,11 @@ mapPinMain.addEventListener('mousedown', function (evt) {
 
     isMove = true;
     var shift = {
-      x: startCoords.x - moveEvt.clientX,
-      y: startCoords.y - moveEvt.clientY
+      x: startCoordinates.x - moveEvt.clientX,
+      y: startCoordinates.y - moveEvt.clientY
     };
 
-    startCoords = {
+    startCoordinates = {
       x: moveEvt.clientX,
       y: moveEvt.clientY
     };
@@ -250,7 +246,6 @@ mapPinMain.addEventListener('mousedown', function (evt) {
         inputAdress.value = mainPinReferencePoint('bottom');
       }
     }
-
     cityMap.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
   };
