@@ -2,7 +2,7 @@
 
 var OFFER_TYPE = ['palace', 'flat', 'house', 'bungalo'];
 var LOCATION_MIN_X = 0;
-var LOCATION_MAX_X = document.querySelector('.map').clientWidth;
+var LOCATION_MAX_X = 1200;
 var LOCATION_MIN_Y = 130;
 var LOCATION_MAX_Y = 630;
 var ADVERTISEMENTS_COUNT = 8;
@@ -162,11 +162,94 @@ var getFragmentWithPins = function (valueLength) {
 
 var advertisementsDataArray = genDataObjectsArray(ADVERTISEMENTS_COUNT);
 
-// При клике на главную метку, обработчик событий делает карту, фильтр, форму и поля формы активной
-mapPinMain.addEventListener('mouseup', function () {
-  cityMap.classList.remove('map--faded');
-  adForm.classList.remove('ad-form--disabled');
-  delAttributeDisabled(adForm.children);
-  delAttributeDisabled(mapfilterForm.children);
-  document.querySelector('.map__pins').appendChild(getFragmentWithPins(advertisementsDataArray.length));
+// Ограничивает перемещение Пина по оси Х
+var setLimitMovementMainPinX = function (mapPinMainCoordinateX) {
+  if (mapPinMainCoordinateX < 0) {
+    mapPinMainCoordinateX = 0;
+  }
+  if (mapPinMainCoordinateX > LOCATION_MAX_X - mapPinMain.offsetWidth) {
+    mapPinMainCoordinateX = LOCATION_MAX_X - mapPinMain.offsetWidth;
+  }
+  return mapPinMainCoordinateX;
+};
+
+// Ограничивает перемещение Пина по оси Y
+var setLimitMovementMainPinY = function (mapPinMainCoordinateY) {
+  if (mapPinMainCoordinateY > LOCATION_MAX_Y) {
+    mapPinMainCoordinateY = LOCATION_MAX_Y;
+  }
+  if (mapPinMainCoordinateY < LOCATION_MIN_Y) {
+    mapPinMainCoordinateY = LOCATION_MIN_Y;
+  }
+  return mapPinMainCoordinateY;
+};
+
+// Возвращает координаты метки, в зависимости от атрибута функции (середина Пина или координаты, на которые метка указывает своим острым концом)
+var mainPinReferencePoint = function (referencePoint) {
+  var pinReferencePoint;
+  if (referencePoint === 'center') {
+    pinReferencePoint = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2);
+  }
+  if (referencePoint === 'bottom') {
+    pinReferencePoint = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight);
+  }
+  return pinReferencePoint;
+};
+
+var isDisabledMap = true;
+mapPinMain.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
+  var isMove = false;
+  var startCoordinates = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    isMove = true;
+    var shift = {
+      x: startCoordinates.x - moveEvt.clientX,
+      y: startCoordinates.y - moveEvt.clientY
+    };
+
+    startCoordinates = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    mapPinMain.style.left = setLimitMovementMainPinX(mapPinMain.offsetLeft - shift.x) + 'px';
+    mapPinMain.style.top = setLimitMovementMainPinY(mapPinMain.offsetTop - shift.y) + 'px';
+
+    if (isDisabledMap === true) {
+      inputAdress.value = mainPinReferencePoint('center');
+    } else {
+      inputAdress.value = mainPinReferencePoint('bottom');
+    }
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    if (isMove === true) {
+      if (isDisabledMap === true) {
+        isDisabledMap = false;
+        inputAdress.value = mainPinReferencePoint('center');
+        cityMap.classList.remove('map--faded');
+        adForm.classList.remove('ad-form--disabled');
+        delAttributeDisabled(adForm.children);
+        delAttributeDisabled(mapfilterForm.children);
+        document.querySelector('.map__pins').appendChild(getFragmentWithPins(advertisementsDataArray.length));
+      } else {
+        inputAdress.value = mainPinReferencePoint('bottom');
+      }
+    }
+    cityMap.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  cityMap.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 });
