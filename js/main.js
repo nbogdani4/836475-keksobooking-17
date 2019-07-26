@@ -14,15 +14,15 @@ var MIN_PRICE_HOUSE = 5000;
 var MIN_PRICE_PALACE = 10000;
 
 var cityMap = document.querySelector('.map');
-var adForm = document.querySelector('.ad-form');
-var mapfilterForm = cityMap.querySelector('.map__filters');
-var mapPinMain = cityMap.querySelector('.map__pin--main');
-var inputPrice = adForm.querySelector('#price');
-var selectTypeHousing = adForm.querySelector('#type');
+var cardForm = document.querySelector('.ad-form');
+var filterForm = cityMap.querySelector('.map__filters');
+var mainPin = cityMap.querySelector('.map__pin--main');
+var inputPrice = cardForm.querySelector('#price');
+var typeHousing = cardForm.querySelector('#type');
 
 // Фукнция меняет минимальную цену, в зависимости от выбранного жилья
-var changeMinPrice = function () {
-  var currenItemSelected = selectTypeHousing.value;
+var onChangePrice = function () {
+  var currenItemSelected = typeHousing.value;
   if (currenItemSelected === 'bungalo') {
     inputPrice.placeholder = MIN_PRICE_BUNGALO;
     inputPrice.min = MIN_PRICE_BUNGALO;
@@ -38,23 +38,23 @@ var changeMinPrice = function () {
   }
 };
 
-changeMinPrice();
-selectTypeHousing.addEventListener('change', changeMinPrice);
+onChangePrice();
+typeHousing.addEventListener('change', onChangePrice);
 
-var selectTimeIn = adForm.querySelector('#timein');
-var selectTimeOut = adForm.querySelector('#timeout');
+var timeIn = cardForm.querySelector('#timein');
+var timeOut = cardForm.querySelector('#timeout');
 
 // Функция синхронизирует время заезда /выезда
-var synchronizationTimeFild = function () {
-  if (event.target.id === selectTimeIn.id) {
-    selectTimeOut.value = selectTimeIn.value;
+var onSynchronizationTime = function (evt) {
+  if (evt.target.id === timeIn.id) {
+    timeOut.value = timeIn.value;
     return;
   }
-  selectTimeIn.value = selectTimeOut.value;
+  timeIn.value = timeOut.value;
 };
 
-selectTimeIn.addEventListener('change', synchronizationTimeFild);
-selectTimeOut.addEventListener('change', synchronizationTimeFild);
+timeIn.addEventListener('change', onSynchronizationTime);
+timeOut.addEventListener('change', onSynchronizationTime);
 
 // Функция добавляет атрибут disabled к тегам fieldset и select из переданного массива
 var addAttributeDisabled = function (array) {
@@ -74,15 +74,15 @@ var delAttributeDisabled = function (array) {
   }
 };
 
-var pinMainLocationX = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2);
-var pinMainLocationY = Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2);
-var inputAdress = adForm.querySelector('#address');
+var mainPinLocationX = Math.floor(mainPin.offsetLeft + mainPin.offsetWidth / 2);
+var mainPinLocationY = Math.floor(mainPin.offsetTop + mainPin.offsetHeight / 2);
+var inputAdress = cardForm.querySelector('#address');
 
-inputAdress.value = pinMainLocationX + '.' + pinMainLocationY;
+inputAdress.value = mainPinLocationX + '.' + mainPinLocationY;
 
 // Блокируем поля форм
-addAttributeDisabled(adForm.children);
-addAttributeDisabled(mapfilterForm.children);
+addAttributeDisabled(cardForm.children);
+addAttributeDisabled(filterForm.children);
 
 var genRandomRange = function (min, max) {
   return Math.floor(Math.random() * (max + 1 - min) + min);
@@ -118,11 +118,11 @@ var correctPinLocationY = function (locationY, pinHeight) {
   return correctLocation;
 };
 
-//  Создает массив из 8 сгенерированных объектов со свойствами объявлений
-var genDataObjectsArray = function (countDataObjects) {
-  var advertisementsDataArr = [];
-  for (var i = 1; i <= countDataObjects; i++) {
-    advertisementsDataArr.push(
+//  Создает массив объектов карточек
+var genCardsData = function (cardsCount) {
+  var cardsData = [];
+  for (var i = 1; i <= cardsCount; i++) {
+    cardsData.push(
         {
           author: {
             avatar: 'img/avatars/user' + addLeadingZero(i) + '.png',
@@ -137,67 +137,70 @@ var genDataObjectsArray = function (countDataObjects) {
         }
     );
   }
-  return advertisementsDataArr;
+  return cardsData;
 };
 
 //  Создаем Дом-элемент Пина, с подготовленными местами для вставки данных с массива объекта
-var createPinElement = function (advertisementsData) {
+var createPinElement = function (card) {
   var newPin = document.querySelector('#pin').content.querySelector('.map__pin').cloneNode(true);
   var newPinImg = newPin.querySelector('img');
-  newPinImg.src = advertisementsData.author.avatar;
-  newPinImg.alt = advertisementsData.offer.type;
-  newPin.style.left = correctPinLocationX(advertisementsData.location.x, PIN_WIDTH) + 'px';
-  newPin.style.top = correctPinLocationY(advertisementsData.location.y, PIN_HEIGHT) + 'px';
+  newPinImg.src = card.author.avatar;
+  newPinImg.alt = card.offer.type;
+  newPin.style.left = correctPinLocationX(card.location.x, PIN_WIDTH) + 'px';
+  newPin.style.top = correctPinLocationY(card.location.y, PIN_HEIGHT) + 'px';
   return newPin;
 };
 
+var cards = genCardsData(ADVERTISEMENTS_COUNT);
+
 //  Возвращаем сгенерированный Фрагмент с готовыми Пинами, собранными из шаблона и массива объектов
-var getFragmentWithPins = function (valueLength) {
-  var fragmentWithPins = document.createDocumentFragment();
+var getPinsFragment = function (valueLength) {
+  var fragment = document.createDocumentFragment();
   for (var i = 0; i < valueLength; i++) {
-    fragmentWithPins.appendChild(createPinElement(advertisementsDataArray[i]));
+    fragment.appendChild(createPinElement(cards[i]));
   }
-  return fragmentWithPins;
+  return fragment;
 };
 
-var advertisementsDataArray = genDataObjectsArray(ADVERTISEMENTS_COUNT);
 
 // Ограничивает перемещение Пина по оси Х
-var setLimitMovementMainPinX = function (mapPinMainCoordinateX) {
-  if (mapPinMainCoordinateX < 0) {
-    mapPinMainCoordinateX = 0;
+var setLimitMovementMainPinX = function (coordinateX) {
+  if (coordinateX < 0) {
+    coordinateX = 0;
   }
-  if (mapPinMainCoordinateX > LOCATION_MAX_X - mapPinMain.offsetWidth) {
-    mapPinMainCoordinateX = LOCATION_MAX_X - mapPinMain.offsetWidth;
+  if (coordinateX > LOCATION_MAX_X - mainPin.offsetWidth) {
+    coordinateX = LOCATION_MAX_X - mainPin.offsetWidth;
   }
-  return mapPinMainCoordinateX;
+  return coordinateX;
 };
 
 // Ограничивает перемещение Пина по оси Y
-var setLimitMovementMainPinY = function (mapPinMainCoordinateY) {
-  if (mapPinMainCoordinateY > LOCATION_MAX_Y) {
-    mapPinMainCoordinateY = LOCATION_MAX_Y;
+var setLimitMovementMainPinY = function (coordinateY) {
+  if (coordinateY > LOCATION_MAX_Y) {
+    coordinateY = LOCATION_MAX_Y;
   }
-  if (mapPinMainCoordinateY < LOCATION_MIN_Y) {
-    mapPinMainCoordinateY = LOCATION_MIN_Y;
+  if (coordinateY < LOCATION_MIN_Y) {
+    coordinateY = LOCATION_MIN_Y;
   }
-  return mapPinMainCoordinateY;
+  return coordinateY;
 };
 
 // Возвращает координаты метки, в зависимости от атрибута функции (середина Пина или координаты, на которые метка указывает своим острым концом)
-var mainPinReferencePoint = function (referencePoint) {
-  var pinReferencePoint;
-  if (referencePoint === 'center') {
-    pinReferencePoint = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight / 2);
+var mainPinReferencePoint = function (position) {
+  var referencePoint;
+  if (position === 'center') {
+    referencePoint = Math.floor(mainPin.offsetLeft + mainPin.offsetWidth / 2) + '.' + Math.floor(mainPin.offsetTop + mainPin.offsetHeight / 2);
+    return referencePoint;
   }
-  if (referencePoint === 'bottom') {
-    pinReferencePoint = Math.floor(mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2) + '.' + Math.floor(mapPinMain.offsetTop + mapPinMain.offsetHeight);
+
+  if (position === 'bottom') {
+    referencePoint = Math.floor(mainPin.offsetLeft + mainPin.offsetWidth / 2) + '.' + Math.floor(mainPin.offsetTop + mainPin.offsetHeight);
+    return referencePoint;
   }
-  return pinReferencePoint;
 };
 
 var isDisabledMap = true;
-mapPinMain.addEventListener('mousedown', function (evt) {
+mainPin.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
 
   var isMove = false;
@@ -220,10 +223,10 @@ mapPinMain.addEventListener('mousedown', function (evt) {
       y: moveEvt.clientY
     };
 
-    mapPinMain.style.left = setLimitMovementMainPinX(mapPinMain.offsetLeft - shift.x) + 'px';
-    mapPinMain.style.top = setLimitMovementMainPinY(mapPinMain.offsetTop - shift.y) + 'px';
+    mainPin.style.left = setLimitMovementMainPinX(mainPin.offsetLeft - shift.x) + 'px';
+    mainPin.style.top = setLimitMovementMainPinY(mainPin.offsetTop - shift.y) + 'px';
 
-    if (isDisabledMap === true) {
+    if (isDisabledMap) {
       inputAdress.value = mainPinReferencePoint('center');
     } else {
       inputAdress.value = mainPinReferencePoint('bottom');
@@ -238,10 +241,10 @@ mapPinMain.addEventListener('mousedown', function (evt) {
         isDisabledMap = false;
         inputAdress.value = mainPinReferencePoint('center');
         cityMap.classList.remove('map--faded');
-        adForm.classList.remove('ad-form--disabled');
-        delAttributeDisabled(adForm.children);
-        delAttributeDisabled(mapfilterForm.children);
-        document.querySelector('.map__pins').appendChild(getFragmentWithPins(advertisementsDataArray.length));
+        cardForm.classList.remove('ad-form--disabled');
+        delAttributeDisabled(cardForm.children);
+        delAttributeDisabled(filterForm.children);
+        document.querySelector('.map__pins').appendChild(getPinsFragment(cards.length));
       } else {
         inputAdress.value = mainPinReferencePoint('bottom');
       }
