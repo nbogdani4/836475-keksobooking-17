@@ -8,7 +8,7 @@
 
   var closeError = function () {
     main.removeChild(main.querySelector('.error'));
-    document.removeEventListener ('click', onErrorMouseClick);
+    document.removeEventListener('click', onErrorMouseClick);
     document.removeEventListener('keydown', onErrorEscPress);
   };
 
