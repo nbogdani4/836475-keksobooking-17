@@ -35,6 +35,8 @@
   // Рисуем метки на карте, при удачно полученных даввых
   var onSuccess = function (data) {
     document.querySelector('.map__pins').appendChild(window.pin.getPinsFragment(data));
+    window.form.delAttributeDisabled(filterForm.children);
+
   };
 
   // Ограничивает перемещение Пина по оси Х
@@ -114,12 +116,11 @@
       if (isMove) {
         if (isDisabledMap) {
           isDisabledMap = false;
-          window.data.load(onSuccess, window.data.onError);
+          window.data.load(onSuccess, window.error.onError);
           window.form.inputAdress.value = mainPinReferencePoint('center');
           cityMap.classList.remove('map--faded');
           cardForm.classList.remove('ad-form--disabled');
           window.form.delAttributeDisabled(cardForm.children);
-          window.form.delAttributeDisabled(filterForm.children);
         } else {
           window.form.inputAdress.value = mainPinReferencePoint('bottom');
         }
@@ -138,6 +139,7 @@
     mainPin: mainPin,
     correctPinLocationX: correctPinLocationX,
     correctPinLocationY: correctPinLocationY,
+    onSuccess: onSuccess,
   };
 
 })();
