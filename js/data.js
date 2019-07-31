@@ -1,55 +1,42 @@
 'use strict';
 
 (function () {
-  var OFFER_TYPE = ['palace', 'flat', 'house', 'bungalo'];
-  var LOCATION_MIN_X = 0;
-  var LOCATION_MAX_X = 1200;
-  var LOCATION_MIN_Y = 130;
-  var LOCATION_MAX_Y = 630;
+  var URL = 'https://js.dump.academy/keksobooking/data';
+  var TIMEOUT = 10000;
 
-  var genRandomRange = function (min, max) {
-    return Math.floor(Math.random() * (max + 1 - min) + min);
+  var load = function (onSuccess, onError) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+
+    xhr.addEventListener('load', function () {
+      if (xhr.status === 200) {
+        onSuccess(xhr.response);
+      } else {
+        onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
+      }
+    });
+
+    xhr.addEventListener('error', function () {
+      onError('Произошла ошибка соединения');
+    });
+
+    xhr.addEventListener('timeout', function () {
+      onError('Запрос не успел выполниться за ' + xhr.timeout + ' мс');
+    });
+
+    xhr.timeout = TIMEOUT;
+
+    xhr.open('GET', URL);
+    xhr.send();
   };
 
-  var getRandomValue = function (arr) {
-    var rand = genRandomRange(0, arr.length);
-    return arr[rand];
-  };
-
-  //  Добавляет ведущий ноль, если число меньше двух знаков
-  var addLeadingZero = function (number) {
-    return (number < 10 ? '0' : '') + number;
-  };
-
-  //  Возвращает массив объектов карточек
-  var genCardsData = function (cardsCount) {
-    var cardsData = [];
-    for (var i = 1; i <= cardsCount; i++) {
-      cardsData.push(
-          {
-            author: {
-              avatar: 'img/avatars/user' + addLeadingZero(i) + '.png',
-            },
-            offer: {
-              type: getRandomValue(OFFER_TYPE),
-            },
-            location: {
-              x: genRandomRange(LOCATION_MIN_X, LOCATION_MAX_X),
-              y: genRandomRange(LOCATION_MIN_Y, LOCATION_MAX_Y),
-            }
-          }
-      );
-    }
-    return cardsData;
+  var onError = function (errorMessage) {
+    console.log(errorMessage);
   };
 
   window.data = {
-    genCardsData: genCardsData,
-    LOCATION_MIN_X: LOCATION_MIN_X,
-    LOCATION_MAX_X: LOCATION_MAX_X,
-    LOCATION_MIN_Y: LOCATION_MIN_Y,
-    LOCATION_MAX_Y: LOCATION_MAX_Y,
+    load: load,
+    onError: onError,
   };
+
 })();
-
-

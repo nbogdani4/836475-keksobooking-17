@@ -16,13 +16,11 @@
     return newPin;
   };
 
-
   //  Возвращаем сгенерированный Фрагмент с готовыми Пинами, собранными из шаблона и массива объектов
-  var getPinsFragment = function (count) {
-    var cards = window.data.genCardsData(count);
+  var getPinsFragment = function (data) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < cards.length; i++) {
-      fragment.appendChild(createPinElement(cards[i]));
+    for (var i = 0; i < data.length; i++) {
+      fragment.appendChild(createPinElement(data[i]));
     }
     return fragment;
   };

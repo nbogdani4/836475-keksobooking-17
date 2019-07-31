@@ -9,6 +9,7 @@
 
   var price = window.map.cardForm.querySelector('#price');
   var typeHousing = window.map.cardForm.querySelector('#type');
+
   // Фукнция меняет минимальную цену, в зависимости от выбранного жилья
   var onChangePrice = function () {
     var currenItemSelected = typeHousing.value;
@@ -72,7 +73,6 @@
   // Блокируем поля форм
   addAttributeDisabled(window.map.cardForm.children);
   addAttributeDisabled(window.map.filterForm.children);
-
 
   window.form = {
     inputAdress: inputAdress,

@@ -2,7 +2,10 @@
 
 (function () {
 
-  var ADVERTISEMENTS_COUNT = 8;
+  var LOCATION_MIN_X = 0;
+  var LOCATION_MAX_X = 1200;
+  var LOCATION_MIN_Y = 130;
+  var LOCATION_MAX_Y = 630;
 
   var cityMap = document.querySelector('.map');
   var cardForm = document.querySelector('.ad-form');
@@ -14,8 +17,8 @@
     var correctLocation = locationX - (pinWidth / 2);
     if (locationX < (pinWidth / 2)) {
       correctLocation = 0;
-    } else if (locationX > window.data.LOCATION_MAX_X - (pinWidth / 2)) {
-      correctLocation = window.data.LOCATION_MAX_X - pinWidth;
+    } else if (locationX > LOCATION_MAX_X - (pinWidth / 2)) {
+      correctLocation = LOCATION_MAX_X - pinWidth;
     }
     return correctLocation;
   };
@@ -23,30 +26,35 @@
   //  Корректирует положение Пина по оси У, исходя от его высоты и не дает метке выпасть за пределы карты
   var correctPinLocationY = function (locationY, pinHeight) {
     var correctLocation = locationY - pinHeight;
-    if (correctLocation < window.data.LOCATION_MIN_Y) {
-      correctLocation = window.data.LOCATION_MIN_Y;
+    if (correctLocation < LOCATION_MIN_Y) {
+      correctLocation = LOCATION_MIN_Y;
     }
     return correctLocation;
   };
 
+  // Рисуем метки на карте, при удачно полученных даввых
+  var onSuccess = function (data) {
+    document.querySelector('.map__pins').appendChild(window.pin.getPinsFragment(data));
+  };
+
   // Ограничивает перемещение Пина по оси Х
   var setLimitMovementMainPinX = function (coordinateX) {
-    if (coordinateX < window.data.LOCATION_MIN_X) {
-      coordinateX = window.data.LOCATION_MIN_X;
+    if (coordinateX < LOCATION_MIN_X) {
+      coordinateX = LOCATION_MIN_X;
     }
-    if (coordinateX > window.data.LOCATION_MAX_X - mainPin.offsetWidth) {
-      coordinateX = window.data.LOCATION_MAX_X - mainPin.offsetWidth;
+    if (coordinateX > LOCATION_MAX_X - mainPin.offsetWidth) {
+      coordinateX = LOCATION_MAX_X - mainPin.offsetWidth;
     }
     return coordinateX;
   };
 
   // Ограничивает перемещение Пина по оси Y
   var setLimitMovementMainPinY = function (coordinateY) {
-    if (coordinateY > window.data.LOCATION_MAX_Y) {
-      coordinateY = window.data.LOCATION_MAX_Y;
+    if (coordinateY > LOCATION_MAX_Y) {
+      coordinateY = LOCATION_MAX_Y;
     }
-    if (coordinateY < window.data.LOCATION_MIN_Y) {
-      coordinateY = window.data.LOCATION_MIN_Y;
+    if (coordinateY < LOCATION_MIN_Y) {
+      coordinateY = LOCATION_MIN_Y;
     }
     return coordinateY;
   };
@@ -106,12 +114,12 @@
       if (isMove) {
         if (isDisabledMap) {
           isDisabledMap = false;
+          window.data.load(onSuccess, window.data.onError);
           window.form.inputAdress.value = mainPinReferencePoint('center');
           cityMap.classList.remove('map--faded');
           cardForm.classList.remove('ad-form--disabled');
           window.form.delAttributeDisabled(cardForm.children);
           window.form.delAttributeDisabled(filterForm.children);
-          document.querySelector('.map__pins').appendChild(window.pin.getPinsFragment(ADVERTISEMENTS_COUNT));
         } else {
           window.form.inputAdress.value = mainPinReferencePoint('bottom');
         }
