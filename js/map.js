@@ -2,10 +2,12 @@
 
 (function () {
 
-  var LOCATION_MIN_X = 0;
-  var LOCATION_MAX_X = 1200;
-  var LOCATION_MIN_Y = 130;
-  var LOCATION_MAX_Y = 630;
+  var Location = {
+    MIN_X: 0,
+    MAX_X: 1200,
+    MIN_Y: 130,
+    MAX_Y: 630,
+  };
 
   var cityMap = document.querySelector('.map');
   var cardForm = document.querySelector('.ad-form');
@@ -17,8 +19,8 @@
     var correctLocation = locationX - (pinWidth / 2);
     if (locationX < (pinWidth / 2)) {
       correctLocation = 0;
-    } else if (locationX > LOCATION_MAX_X - (pinWidth / 2)) {
-      correctLocation = LOCATION_MAX_X - pinWidth;
+    } else if (locationX > Location.MAX_X - (pinWidth / 2)) {
+      correctLocation = Location.MAX_X - pinWidth;
     }
     return correctLocation;
   };
@@ -26,8 +28,8 @@
   //  Корректирует положение Пина по оси У, исходя от его высоты и не дает метке выпасть за пределы карты
   var correctPinLocationY = function (locationY, pinHeight) {
     var correctLocation = locationY - pinHeight;
-    if (correctLocation < LOCATION_MIN_Y) {
-      correctLocation = LOCATION_MIN_Y;
+    if (correctLocation < Location.MIN_Y) {
+      correctLocation = Location.MIN_Y;
     }
     return correctLocation;
   };
@@ -41,22 +43,22 @@
 
   // Ограничивает перемещение Пина по оси Х
   var setLimitMovementMainPinX = function (coordinateX) {
-    if (coordinateX < LOCATION_MIN_X) {
-      coordinateX = LOCATION_MIN_X;
+    if (coordinateX < Location.MIN_X) {
+      coordinateX = Location.MIN_X;
     }
-    if (coordinateX > LOCATION_MAX_X - mainPin.offsetWidth) {
-      coordinateX = LOCATION_MAX_X - mainPin.offsetWidth;
+    if (coordinateX > Location.MAX_X - mainPin.offsetWidth) {
+      coordinateX = Location.MAX_X - mainPin.offsetWidth;
     }
     return coordinateX;
   };
 
   // Ограничивает перемещение Пина по оси Y
   var setLimitMovementMainPinY = function (coordinateY) {
-    if (coordinateY > LOCATION_MAX_Y) {
-      coordinateY = LOCATION_MAX_Y;
+    if (coordinateY > Location.MAX_Y) {
+      coordinateY = Location.MAX_Y;
     }
-    if (coordinateY < LOCATION_MIN_Y) {
-      coordinateY = LOCATION_MIN_Y;
+    if (coordinateY < Location.MIN_Y) {
+      coordinateY = Location.MIN_Y;
     }
     return coordinateY;
   };
