@@ -2,7 +2,12 @@
 
 (function () {
 
-  var ADVERTISEMENTS_COUNT = 8;
+  var Location = {
+    MIN_X: 0,
+    MAX_X: 1200,
+    MIN_Y: 130,
+    MAX_Y: 630,
+  };
 
   var cityMap = document.querySelector('.map');
   var cardForm = document.querySelector('.ad-form');
@@ -14,8 +19,8 @@
     var correctLocation = locationX - (pinWidth / 2);
     if (locationX < (pinWidth / 2)) {
       correctLocation = 0;
-    } else if (locationX > window.data.LOCATION_MAX_X - (pinWidth / 2)) {
-      correctLocation = window.data.LOCATION_MAX_X - pinWidth;
+    } else if (locationX > Location.MAX_X - (pinWidth / 2)) {
+      correctLocation = Location.MAX_X - pinWidth;
     }
     return correctLocation;
   };
@@ -23,30 +28,37 @@
   //  Корректирует положение Пина по оси У, исходя от его высоты и не дает метке выпасть за пределы карты
   var correctPinLocationY = function (locationY, pinHeight) {
     var correctLocation = locationY - pinHeight;
-    if (correctLocation < window.data.LOCATION_MIN_Y) {
-      correctLocation = window.data.LOCATION_MIN_Y;
+    if (correctLocation < Location.MIN_Y) {
+      correctLocation = Location.MIN_Y;
     }
     return correctLocation;
   };
 
+  // Рисуем метки на карте, при удачно полученных даввых
+  var onSuccess = function (data) {
+    document.querySelector('.map__pins').appendChild(window.pin.getPinsFragment(data));
+    window.form.delAttributeDisabled(filterForm.children);
+
+  };
+
   // Ограничивает перемещение Пина по оси Х
   var setLimitMovementMainPinX = function (coordinateX) {
-    if (coordinateX < window.data.LOCATION_MIN_X) {
-      coordinateX = window.data.LOCATION_MIN_X;
+    if (coordinateX < Location.MIN_X) {
+      coordinateX = Location.MIN_X;
     }
-    if (coordinateX > window.data.LOCATION_MAX_X - mainPin.offsetWidth) {
-      coordinateX = window.data.LOCATION_MAX_X - mainPin.offsetWidth;
+    if (coordinateX > Location.MAX_X - mainPin.offsetWidth) {
+      coordinateX = Location.MAX_X - mainPin.offsetWidth;
     }
     return coordinateX;
   };
 
   // Ограничивает перемещение Пина по оси Y
   var setLimitMovementMainPinY = function (coordinateY) {
-    if (coordinateY > window.data.LOCATION_MAX_Y) {
-      coordinateY = window.data.LOCATION_MAX_Y;
+    if (coordinateY > Location.MAX_Y) {
+      coordinateY = Location.MAX_Y;
     }
-    if (coordinateY < window.data.LOCATION_MIN_Y) {
-      coordinateY = window.data.LOCATION_MIN_Y;
+    if (coordinateY < Location.MIN_Y) {
+      coordinateY = Location.MIN_Y;
     }
     return coordinateY;
   };
@@ -106,12 +118,11 @@
       if (isMove) {
         if (isDisabledMap) {
           isDisabledMap = false;
+          window.data.load(onSuccess, window.error.onError);
           window.form.inputAdress.value = mainPinReferencePoint('center');
           cityMap.classList.remove('map--faded');
           cardForm.classList.remove('ad-form--disabled');
           window.form.delAttributeDisabled(cardForm.children);
-          window.form.delAttributeDisabled(filterForm.children);
-          document.querySelector('.map__pins').appendChild(window.pin.getPinsFragment(ADVERTISEMENTS_COUNT));
         } else {
           window.form.inputAdress.value = mainPinReferencePoint('bottom');
         }
@@ -130,6 +141,7 @@
     mainPin: mainPin,
     correctPinLocationX: correctPinLocationX,
     correctPinLocationY: correctPinLocationY,
+    onSuccess: onSuccess,
   };
 
 })();

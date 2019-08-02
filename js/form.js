@@ -2,36 +2,26 @@
 
 (function () {
 
-  var MIN_PRICE_BUNGALO = 0;
-  var MIN_PRICE_FLAT = 1000;
-  var MIN_PRICE_HOUSE = 5000;
-  var MIN_PRICE_PALACE = 10000;
+  var housingToMinPrice = {
+    'bungalo': 0,
+    'flat': 1000,
+    'house': 5000,
+    'palace': 10000,
+  };
 
   var price = window.map.cardForm.querySelector('#price');
   var typeHousing = window.map.cardForm.querySelector('#type');
+  var timeIn = window.map.cardForm.querySelector('#timein');
+  var timeOut = window.map.cardForm.querySelector('#timeout');
+
   // Фукнция меняет минимальную цену, в зависимости от выбранного жилья
   var onChangePrice = function () {
-    var currenItemSelected = typeHousing.value;
-    if (currenItemSelected === 'bungalo') {
-      price.placeholder = MIN_PRICE_BUNGALO;
-      price.min = MIN_PRICE_BUNGALO;
-    } else if (currenItemSelected === 'flat') {
-      price.placeholder = MIN_PRICE_FLAT;
-      price.min = MIN_PRICE_FLAT;
-    } else if (currenItemSelected === 'house') {
-      price.placeholder = MIN_PRICE_HOUSE;
-      price.min = MIN_PRICE_HOUSE;
-    } else if (currenItemSelected === 'palace') {
-      price.placeholder = MIN_PRICE_PALACE;
-      price.min = MIN_PRICE_PALACE;
-    }
+      price.placeholder = housingToMinPrice[typeHousing.value];
+      price.min = housingToMinPrice[typeHousing.value];
   };
 
   onChangePrice();
   typeHousing.addEventListener('change', onChangePrice);
-
-  var timeIn = window.map.cardForm.querySelector('#timein');
-  var timeOut = window.map.cardForm.querySelector('#timeout');
 
   // Функция синхронизирует время заезда / выезда
   var onSynchronizationTime = function (evt) {
@@ -72,7 +62,6 @@
   // Блокируем поля форм
   addAttributeDisabled(window.map.cardForm.children);
   addAttributeDisabled(window.map.filterForm.children);
-
 
   window.form = {
     inputAdress: inputAdress,
