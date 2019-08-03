@@ -18,11 +18,13 @@
   var insertReferencePoint = function (position) {
     if (position === 'center') {
       window.util.adress.value = Math.floor(window.util.mainPin.offsetLeft + window.util.mainPin.offsetWidth / 2) + '.' + Math.floor(window.util.mainPin.offsetTop + window.util.mainPin.offsetHeight / 2);
-    } else if (position === 'bottom') {
+    }
+    if (position === 'bottom') {
       window.util.adress.value = Math.floor(window.util.mainPin.offsetLeft + window.util.mainPin.offsetWidth / 2) + '.' + Math.floor(window.util.mainPin.offsetTop + window.util.mainPin.offsetHeight);
     }
   };
 
+  // Устанавливаем изначальные координаты главной метки и вписываем их в поле Аресс
   var resetMainPinPosition = function () {
     window.util.mainPin.style.left = OriginalPosition.X + 'px';
     window.util.mainPin.style.top = OriginalPosition.Y + 'px';
@@ -89,6 +91,7 @@
         window.util.isDisabledMap = false;
         window.map.activateMap();
         window.form.activateForm();
+        window.data.load(window.pins.onSuccess, window.error.onError);
       }
 
       window.util.elementMap.removeEventListener('mousemove', onMouseMove);
