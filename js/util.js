@@ -8,6 +8,7 @@
   var mainPin = elementMap.querySelector('.map__pin--main');
   var elementForm = document.querySelector('.ad-form');
   var adress = elementForm.querySelector('#address');
+  var pinsArea = document.querySelector('.map__pins');
   var isDisabledMap = true;
 
   // Устанавливаем атрибут disabled переданному элементу
@@ -31,11 +32,12 @@
           action();
         }
       },
-      
+
       elementMap: elementMap,
       mainPin: mainPin,
       elementForm: elementForm,
       adress: adress,
+      pinsArea: pinsArea,
       isDisabledMap: isDisabledMap,
       disableElement: disableElement,
       enableElement: enableElement,

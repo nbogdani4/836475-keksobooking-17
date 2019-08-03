@@ -6,6 +6,7 @@
   var createPinElement = function (card) {
     var newPin = document.querySelector('#pin').content.querySelector('.map__pin').cloneNode(true);
     var newPinImg = newPin.querySelector('img');
+    newPin.classList.add('map__pin--card');
     newPinImg.src = card.author.avatar;
     newPinImg.alt = card.offer.type;
     newPin.style.left = card.location.x + 'px';
@@ -25,7 +26,7 @@
 
   // Рисуем метки на карте, при удачно полученных данных
   var onSuccess = function (data) {
-    document.querySelector('.map__pins').appendChild(getPinsFragment(data));
+    window.util.pinsArea.appendChild(getPinsFragment(data));
     window.filter.activateFilter();
   };
 
