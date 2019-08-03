@@ -11,7 +11,7 @@
   var disableMap = function () {
     window.util.isDisabledMap = true;
     window.util.elementMap.classList.add('map--faded');
-    window.mainPin.moveToOriginalPosition();
+    window.mainPin.resetMainPinPosition();
   };
 
   disableMap();

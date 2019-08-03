@@ -14,9 +14,19 @@
     Y: 375
   };
 
-  var moveToOriginalPosition = function () {
+  // Заполняет поле адрес координатами, в зависимости от атрибута функции (середина Пина или координаты, на которые метка указывает своим острым концом)
+  var insertReferencePoint = function (position) {
+    if (position === 'center') {
+      window.util.adress.value = Math.floor(window.util.mainPin.offsetLeft + window.util.mainPin.offsetWidth / 2) + '.' + Math.floor(window.util.mainPin.offsetTop + window.util.mainPin.offsetHeight / 2);
+    } else if (position === 'bottom') {
+      window.util.adress.value = Math.floor(window.util.mainPin.offsetLeft + window.util.mainPin.offsetWidth / 2) + '.' + Math.floor(window.util.mainPin.offsetTop + window.util.mainPin.offsetHeight);
+    }
+  };
+
+  var resetMainPinPosition = function () {
     window.util.mainPin.style.left = OriginalPosition.X + 'px';
     window.util.mainPin.style.top = OriginalPosition.Y + 'px';
+    insertReferencePoint('center');
   };
 
   // Ограничивает перемещение Пина по оси Х
@@ -64,6 +74,12 @@
 
       window.util.mainPin.style.left = setLimitMovementMainPinX(window.util.mainPin.offsetLeft - shift.x) + 'px';
       window.util.mainPin.style.top = setLimitMovementMainPinY(window.util.mainPin.offsetTop - shift.y) + 'px';
+
+      if (window.util.isDisabledMap) {
+        insertReferencePoint('center');
+      } else {
+        insertReferencePoint('bottom');
+      }
     };
 
     var onMouseUp = function (upEvt) {
@@ -84,7 +100,7 @@
   });
 
   window.mainPin = {
-    moveToOriginalPosition: moveToOriginalPosition,
+    resetMainPinPosition: resetMainPinPosition,
   };
 
 })();

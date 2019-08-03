@@ -4,8 +4,9 @@
 
   var elementMap = document.querySelector('.map');
   var mainPin = elementMap.querySelector('.map__pin--main');
+  var elementForm = document.querySelector('.ad-form');
+  var adress = elementForm.querySelector('#address');
   var isDisabledMap = true;
-
 
   // Устанавливаем атрибут disabled переданному элементу
   var disableElement = function (element) {
@@ -18,9 +19,11 @@
   };
 
   window.util = {
-    isDisabledMap: isDisabledMap,
     elementMap: elementMap,
     mainPin: mainPin,
+    elementForm: elementForm,
+    adress: adress,
+    isDisabledMap: isDisabledMap,
     disableElement: disableElement,
     enableElement: enableElement,
   };

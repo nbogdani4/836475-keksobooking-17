@@ -9,16 +9,15 @@
     'palace': 10000,
   };
 
-  var elementForm = document.querySelector('.ad-form');
-  var formChildren = elementForm.querySelectorAll('fieldset');
-  var price = elementForm.querySelector('#price');
-  var typeHousing = elementForm.querySelector('#type');
-  var timeIn = elementForm.querySelector('#timein');
-  var timeOut = elementForm.querySelector('#timeout');
+  var formChildren = window.util.elementForm.querySelectorAll('fieldset');
+  var price = window.util.elementForm.querySelector('#price');
+  var typeHousing = window.util.elementForm.querySelector('#type');
+  var timeIn = window.util.elementForm.querySelector('#timein');
+  var timeOut = window.util.elementForm.querySelector('#timeout');
 
   // Активируем форму
   var activateForm = function () {
-    elementForm.classList.remove('ad-form--disabled');
+    window.util.elementForm.classList.remove('ad-form--disabled');
     formChildren.forEach(window.util.enableElement);
     onChangePrice();
     typeHousing.addEventListener('change', onChangePrice);
@@ -28,10 +27,9 @@
 
   // Блокируем форму
   var disableForm = function () {
-    elementForm.classList.add('ad-form--disabled');
+    window.util.elementForm.classList.add('ad-form--disabled');
     formChildren.forEach(window.util.disableElement);
     onChangePrice();
-    window.mainPin.moveToOriginalPosition();
   };
 
   // Фукнция меняет минимальную цену, в зависимости от выбранного жилья
@@ -53,7 +51,7 @@
 
   window.form = {
     activateForm: activateForm,
-    disableForm: disableForm
+    disableForm: disableForm,
   };
 
 })();
