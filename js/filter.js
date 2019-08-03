@@ -13,6 +13,7 @@
   // Блокируем фильтр
   var disableFilter = function () {
     filterChildren.forEach(window.util.disableElement);
+    elementFilter.reset();
   };
 
   disableFilter();

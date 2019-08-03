@@ -14,13 +14,26 @@
     Y: 375
   };
 
-  // Заполняет поле адрес координатами, в зависимости от атрибута функции (середина Пина или координаты, на которые метка указывает своим острым концом)
+  var pageActivation = function () {
+    if (window.util.isDisabledMap) {
+      window.util.isDisabledMap = false;
+      window.map.activateMap();
+      window.form.activateForm();
+      window.data.load(window.pins.onSuccess, window.error.onError);
+    }
+  };
+
+  var onMainPinEnterPress = function (evt) {
+        window.util.isEnterEvent(evt, pageActivation)
+  };
+
+  // Заполняет поле Адрес координатами, в зависимости от атрибута функции (середина Пина или координаты, на которые метка указывает своим острым концом)
   var insertReferencePoint = function (position) {
     if (position === 'center') {
-      window.util.adress.value = Math.floor(window.util.mainPin.offsetLeft + window.util.mainPin.offsetWidth / 2) + '.' + Math.floor(window.util.mainPin.offsetTop + window.util.mainPin.offsetHeight / 2);
+      window.util.adress.value = Math.floor(window.util.mainPin.offsetLeft + window.util.mainPin.offsetWidth / 2) + ',' + Math.floor(window.util.mainPin.offsetTop + window.util.mainPin.offsetHeight / 2);
     }
     if (position === 'bottom') {
-      window.util.adress.value = Math.floor(window.util.mainPin.offsetLeft + window.util.mainPin.offsetWidth / 2) + '.' + Math.floor(window.util.mainPin.offsetTop + window.util.mainPin.offsetHeight);
+      window.util.adress.value = Math.floor(window.util.mainPin.offsetLeft + window.util.mainPin.offsetWidth / 2) + ',' + Math.floor(window.util.mainPin.offsetTop + window.util.mainPin.offsetHeight);
     }
   };
 
@@ -86,13 +99,7 @@
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-
-      if (window.util.isDisabledMap) {
-        window.util.isDisabledMap = false;
-        window.map.activateMap();
-        window.form.activateForm();
-        window.data.load(window.pins.onSuccess, window.error.onError);
-      }
+      pageActivation();
 
       window.util.elementMap.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
@@ -104,6 +111,7 @@
 
   window.mainPin = {
     resetMainPinPosition: resetMainPinPosition,
+    onMainPinEnterPress: onMainPinEnterPress
   };
 
 })();

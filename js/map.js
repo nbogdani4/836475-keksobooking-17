@@ -5,6 +5,7 @@
   // Активируем Карту
   var activateMap = function () {
     window.util.elementMap.classList.remove('map--faded');
+
   };
 
   // Блокируем карту
@@ -12,6 +13,7 @@
     window.util.isDisabledMap = true;
     window.util.elementMap.classList.add('map--faded');
     window.mainPin.resetMainPinPosition();
+    window.util.mainPin.addEventListener('keydown', window.mainPin.onMainPinEnterPress);
   };
 
   disableMap();

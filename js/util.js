@@ -1,6 +1,8 @@
 'use strict';
 
-(function () {
+  window.util = (function () {
+    var ESC_KEYCODE = 27;
+    var ENTER_KEYCODE = 13;
 
   var elementMap = document.querySelector('.map');
   var mainPin = elementMap.querySelector('.map__pin--main');
@@ -18,10 +20,6 @@
     element.disabled = false;
   };
 
-  window.util = (function () {
-    var ESC_KEYCODE = 27;
-    var ENTER_KEYCODE = 13;
-
     return {
       isEscEvent: function (evt, action) {
         if (evt.keyCode === ESC_KEYCODE) {
@@ -32,19 +30,14 @@
         if (evt.keyCode === ENTER_KEYCODE) {
           action();
         }
-      }
+      },
+      
+      elementMap: elementMap,
+      mainPin: mainPin,
+      elementForm: elementForm,
+      adress: adress,
+      isDisabledMap: isDisabledMap,
+      disableElement: disableElement,
+      enableElement: enableElement,
     };
   })();
-
-  window.util = {
-    elementMap: elementMap,
-    mainPin: mainPin,
-    elementForm: elementForm,
-    adress: adress,
-    isDisabledMap: isDisabledMap,
-    disableElement: disableElement,
-    enableElement: enableElement,
-  };
-
-})();
-
