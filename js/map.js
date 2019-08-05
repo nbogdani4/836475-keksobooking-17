@@ -4,7 +4,7 @@
 
   var deletePins = function () {
     var pins = window.util.elementMap.querySelectorAll('.map__pin--card');
-    pins.forEach(function(pin) {
+    pins.forEach(function (pin) {
       window.util.pinsArea.removeChild(pin);
     });
   };
@@ -27,7 +27,8 @@
 
   window.map = {
     activateMap: activateMap,
-    disableMap: disableMap
+    disableMap: disableMap,
+    deletePins: deletePins
   };
 
 })();

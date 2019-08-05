@@ -5,7 +5,7 @@
   var main = document.querySelector('main');
 
   // Функция удаляет сообщение об ошибке и сбрасывает окно в неактивное состояние
-  var CloseError = function () {
+  var closeError = function () {
     window.form.disableForm();
     window.filter.disableFilter();
     window.map.disableMap();
@@ -17,13 +17,13 @@
   // Функция проверяет клик мышки и вызывает функцию закрытия сообщения об ошибке
   var onErrorMouseClick = function (evt) {
     if ((evt.target.className === 'error') || (evt.target.className === 'error__button')) {
-      CloseError();
+      closeError();
     }
   };
 
   // Функция проверяет правильная ли была нажата кнопка, и вызывает функцию закрытия сообщения об ошибке
   var onErrorEscPress = function (evt) {
-    window.util.isEscEvent(evt, CloseError);
+    window.util.isEscEvent(evt, closeError);
   };
 
   // Функция генерирует шаблон ошибки

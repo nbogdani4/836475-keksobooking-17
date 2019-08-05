@@ -24,7 +24,7 @@
   };
 
   var onMainPinEnterPress = function (evt) {
-        window.util.isEnterEvent(evt, pageActivation)
+    window.util.isEnterEvent(evt, pageActivation);
   };
 
   // Заполняет поле Адрес координатами, в зависимости от атрибута функции (середина Пина или координаты, на которые метка указывает своим острым концом)

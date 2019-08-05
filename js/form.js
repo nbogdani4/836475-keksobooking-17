@@ -24,7 +24,7 @@
     typeHousing.addEventListener('change', onChangePrice);
     timeIn.addEventListener('change', onSynchronizationTime);
     timeOut.addEventListener('change', onSynchronizationTime);
-    buttonReset.addEventListener('click',onClickReset)
+    buttonReset.addEventListener('click', onClickReset);
   };
 
   // Блокируем форму
@@ -34,7 +34,7 @@
     window.util.elementForm.classList.add('ad-form--disabled');
     timeIn.removeEventListener('change', onSynchronizationTime);
     timeOut.removeEventListener('change', onSynchronizationTime);
-    buttonReset.removeEventListener('click',onClickReset)
+    buttonReset.removeEventListener('click', onClickReset);
     onChangePrice();
   };
 

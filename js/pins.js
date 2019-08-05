@@ -2,6 +2,8 @@
 
 (function () {
 
+  var MAX_PIN_COUNT = 5;
+
   //  Создаем Дом-элемент Пина, с подготовленными местами для вставки данных с массива объекта
   var createPinElement = function (card) {
     var newPin = document.querySelector('#pin').content.querySelector('.map__pin').cloneNode(true);
@@ -18,20 +20,23 @@
   //  Возвращаем сгенерированный Фрагмент с готовыми Пинами, собранными из шаблона и массива объектов
   var getPinsFragment = function (data) {
     var fragment = document.createDocumentFragment();
-    data.forEach(function (value) {
-      fragment.appendChild(createPinElement(value));
+    data = data.length > MAX_PIN_COUNT ? data.slice(0, MAX_PIN_COUNT) : data;
+    data.forEach(function (it) {
+      fragment.appendChild(createPinElement(it));
     });
-    return fragment;
+    window.util.pinsArea.appendChild(fragment);
+    window.filter.activateFilter();
   };
 
   // Рисуем метки на карте, при удачно полученных данных
   var onSuccess = function (data) {
-    window.util.pinsArea.appendChild(getPinsFragment(data));
-    window.filter.activateFilter();
+    window.util.pins = data;
+    getPinsFragment(data);
   };
 
   window.pins = {
     onSuccess: onSuccess,
+    getPinsFragment: getPinsFragment,
   };
 
 })();
