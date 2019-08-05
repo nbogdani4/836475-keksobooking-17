@@ -2,28 +2,31 @@
 
 (function () {
 
-  var ESC_KEYCODE = 27;
-
   var main = document.querySelector('main');
 
+  // Функция удаляет сообщение об ошибке и сбрасывает окно в неактивное состояние
   var closeError = function () {
+    window.form.disableForm();
+    window.filter.disableFilter();
+    window.map.disableMap();
     main.removeChild(main.querySelector('.error'));
     document.removeEventListener('click', onErrorMouseClick);
     document.removeEventListener('keydown', onErrorEscPress);
   };
 
+  // Функция проверяет клик мышки и вызывает функцию закрытия сообщения об ошибке
   var onErrorMouseClick = function (evt) {
     if ((evt.target.className === 'error') || (evt.target.className === 'error__button')) {
       closeError();
     }
   };
 
+  // Функция проверяет правильная ли была нажата кнопка, и вызывает функцию закрытия сообщения об ошибке
   var onErrorEscPress = function (evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
-      closeError();
-    }
+    window.util.isEscEvent(evt, closeError);
   };
 
+  // Функция генерирует шаблон ошибки
   var onError = function (errorMessage) {
     var node = document.querySelector('#error').content.querySelector('.error').cloneNode(true);
     node.querySelector('.error__message').textContent = errorMessage;

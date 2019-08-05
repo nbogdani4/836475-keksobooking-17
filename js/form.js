@@ -9,19 +9,47 @@
     'palace': 10000,
   };
 
-  var price = window.map.cardForm.querySelector('#price');
-  var typeHousing = window.map.cardForm.querySelector('#type');
-  var timeIn = window.map.cardForm.querySelector('#timein');
-  var timeOut = window.map.cardForm.querySelector('#timeout');
+  var formChildren = window.util.elementForm.querySelectorAll('fieldset');
+  var price = window.util.elementForm.querySelector('#price');
+  var typeHousing = window.util.elementForm.querySelector('#type');
+  var timeIn = window.util.elementForm.querySelector('#timein');
+  var timeOut = window.util.elementForm.querySelector('#timeout');
+  var buttonReset = window.util.elementForm.querySelector('.ad-form__reset');
+
+  // Активируем форму
+  var activateForm = function () {
+    window.util.elementForm.classList.remove('ad-form--disabled');
+    formChildren.forEach(window.util.enableElement);
+    onChangePrice();
+    typeHousing.addEventListener('change', onChangePrice);
+    timeIn.addEventListener('change', onSynchronizationTime);
+    timeOut.addEventListener('change', onSynchronizationTime);
+    buttonReset.addEventListener('click', onClickReset);
+  };
+
+  // Блокируем форму
+  var disableForm = function () {
+    formChildren.forEach(window.util.disableElement);
+    window.util.elementForm.reset();
+    window.util.elementForm.classList.add('ad-form--disabled');
+    timeIn.removeEventListener('change', onSynchronizationTime);
+    timeOut.removeEventListener('change', onSynchronizationTime);
+    buttonReset.removeEventListener('click', onClickReset);
+    onChangePrice();
+  };
+
+  var onClickReset = function (evt) {
+    evt.preventDefault();
+    disableForm();
+    window.filter.disableFilter();
+    window.map.disableMap();
+  };
 
   // Фукнция меняет минимальную цену, в зависимости от выбранного жилья
   var onChangePrice = function () {
-      price.placeholder = housingToMinPrice[typeHousing.value];
-      price.min = housingToMinPrice[typeHousing.value];
+    price.placeholder = housingToMinPrice[typeHousing.value];
+    price.min = housingToMinPrice[typeHousing.value];
   };
-
-  onChangePrice();
-  typeHousing.addEventListener('change', onChangePrice);
 
   // Функция синхронизирует время заезда / выезда
   var onSynchronizationTime = function (evt) {
@@ -32,40 +60,11 @@
     timeIn.value = timeOut.value;
   };
 
-  timeIn.addEventListener('change', onSynchronizationTime);
-  timeOut.addEventListener('change', onSynchronizationTime);
-
-  // Функция добавляет атрибут disabled к тегам fieldset и select из переданного массива
-  var addAttributeDisabled = function (array) {
-    for (var i = 0; i < array.length; i++) {
-      if ((array[i].tagName.toLowerCase() === 'fieldset') || (array[i].tagName.toLowerCase() === 'select')) {
-        array[i].disabled = true;
-      }
-    }
-  };
-
-  // Функция удаляет атрибут disabled у любых тегов (если он есть) из переданного массива
-  var delAttributeDisabled = function (array) {
-    for (var i = 0; i < array.length; i++) {
-      if (array[i].disabled) {
-        array[i].disabled = false;
-      }
-    }
-  };
-
-  var mainPinLocationX = Math.floor(window.map.mainPin.offsetLeft + window.map.mainPin.offsetWidth / 2);
-  var mainPinLocationY = Math.floor(window.map.mainPin.offsetTop + window.map.mainPin.offsetHeight / 2);
-  var inputAdress = window.map.cardForm.querySelector('#address');
-
-  inputAdress.value = mainPinLocationX + '.' + mainPinLocationY;
-
-  // Блокируем поля форм
-  addAttributeDisabled(window.map.cardForm.children);
-  addAttributeDisabled(window.map.filterForm.children);
+  disableForm();
 
   window.form = {
-    inputAdress: inputAdress,
-    delAttributeDisabled: delAttributeDisabled,
+    activateForm: activateForm,
+    disableForm: disableForm,
   };
 
 })();
